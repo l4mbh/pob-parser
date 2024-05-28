@@ -7,6 +7,8 @@ const port = 3000;
 const cors = require("cors");
 const cors_anywhere = require("cors-anywhere");
 
+const apiRoutes = require('./routes/api')
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -21,27 +23,29 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/pob", async (req, res) => {
-  const code = req.body.code;
+app.use('/api', apiRoutes);
 
-  try {
-    const decodeStr = urlbase64.decode(code);
+// app.use("/pob", async (req, res) => {
+//   const code = req.body.code;
 
-    await parseString(
-      zlib.inflateSync(Buffer.from(decodeStr, "base64")).toString("ascii"),
-      (err, result) => {
-        const data = {
-          skills: result.PathOfBuilding.Skills[0].SkillSet[0].Skill,
-          items: result.PathOfBuilding.Items[0].Item,
-          notes: result.PathOfBuilding.Notes,
-        };
-        res.status(200).json(data);
-      }
-    );
-  } catch (err) {
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
+//   try {
+//     const decodeStr = urlbase64.decode(code);
+
+//     await parseString(
+//       zlib.inflateSync(Buffer.from(decodeStr, "base64")).toString("ascii"),
+//       (err, result) => {
+//         const data = {
+//           skills: result.PathOfBuilding.Skills[0].SkillSet[0].Skill,
+//           items: result.PathOfBuilding.Items[0].Item,
+//           notes: result.PathOfBuilding.Notes,
+//         };
+//         res.status(200).json(data);
+//       }
+//     );
+//   } catch (err) {
+//     res.status(500).json({ message: "Something went wrong" });
+//   }
+// });
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");
@@ -53,9 +57,7 @@ app.listen(port, () => {
 
 cors_anywhere
   .createServer({
-    originWhitelist: [], // Allow all origins
-    // requireHeader: ['origin', 'x-requested-with'],
-    // removeHeaders: ['cookie', 'cookie2']
+    originWhitelist: [],
   })
   .listen(8080, () => {
     console.log(`Cors-anythere running at http://localhost:8080`);
