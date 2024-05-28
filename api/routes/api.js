@@ -25,10 +25,10 @@ const allowCors = fn => async (req, res) => {
 // GET api
 
 // POST api
-router.post("/pob-parser",allowCors(apiController.pobParser));
-router.post("/pobb",allowCors(apiController.pobb));
-router.post("/poewiki-skills", allowCors(apiController.skillsGem));
-router.post("/poewiki-skill-img", allowCors(apiController.skillGemImg));
+router.post("/pob-parser",apiController.pobParser);
+router.post("/pobb",apiController.pobb);
+router.post("/poewiki-skills", apiController.skillsGem);
+router.post("/poewiki-skill-img", apiController.skillGemImg);
 
 
 
