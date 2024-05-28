@@ -1,11 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 
-const apiRoutes = require('../routes/api');
-
+const apiRoutes = require("./routes/api");
 
 const app = express();
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,7 +17,6 @@ app.use(function (req, res, next) {
   );
   next();
 });
-
 
 // app.use("/pob", async (req, res) => {
 //   const code = req.body.code;
@@ -38,8 +35,7 @@ app.use(function (req, res, next) {
 //   }
 // });
 
-app.use("/api", apiRoutes);	
-
+app.use("/api", apiRoutes);
 
 app.use("/", (req, res) => {
   res.status(200).send("hello");

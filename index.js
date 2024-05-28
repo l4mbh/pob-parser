@@ -7,7 +7,7 @@ const port = 3000;
 const cors = require("cors");
 const cors_anywhere = require("cors-anywhere");
 
-const apiRoutes = require('./routes/api')
+const apiRoutes = require("./api/routes/api");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,7 +23,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use('/api', apiRoutes);
+app.use("/api", apiRoutes);
 
 // app.use("/pob", async (req, res) => {
 //   const code = req.body.code;
