@@ -1,5 +1,6 @@
 const axios = require("axios");
 const cache = require("../cache/NodeCache");
+const redistClient = require("../cache/Redist");
 
 const zlib = require("zlib");
 const urlbase64 = require("url-safe-base64");
@@ -7,6 +8,12 @@ const parseString = require("xml2js").parseString;
 
 exports.pobParser = async (req, res, next) => {
   const code = req.body.code;
+
+  const testcachedData = await redistClient.get(cacheKey);
+  if (testcachedData) {
+    console.log("Redist working");
+    return res.status(200).json(JSON.parse(cachedData));
+  }
 
   const cacheKey = `pobParser_${code}`;
 
