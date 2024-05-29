@@ -7,6 +7,9 @@ const port = 3000;
 const cors = require("cors");
 const cors_anywhere = require("cors-anywhere");
 
+require('dotenv').config();
+
+
 const apiRoutes = require("./api/routes/api");
 
 app.use(express.json());

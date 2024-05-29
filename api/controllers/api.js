@@ -1,6 +1,5 @@
 const axios = require("axios");
 const cache = require("../cache/NodeCache");
-const redistClient = require("../cache/Redist");
 
 const zlib = require("zlib");
 const urlbase64 = require("url-safe-base64");
@@ -8,12 +7,6 @@ const parseString = require("xml2js").parseString;
 
 exports.pobParser = async (req, res, next) => {
   const code = req.body.code;
-
-  const testcachedData = await redistClient.get(cacheKey);
-  if (testcachedData) {
-    console.log("Redist working");
-    return res.status(200).json(JSON.parse(cachedData));
-  }
 
   const cacheKey = `pobParser_${code}`;
 
@@ -96,19 +89,21 @@ exports.skillsGem = (req, res, next) => {
     });
 };
 
-exports.skillGemImg = (req, res, next) => {
-  const skillImageName = req.body.skillImageName;
+exports.itemImg = (req, res, next) => {
+  const itemImage = req.body.itemName;
 
-  const cacheKey = `skillGemImg_${skillImageName}`;
+  const cacheKey = `itemImg${itemImage}`;
 
   const cachedData = cache.get(cacheKey);
   if (cachedData) {
     return res.status(200).json(cachedData);
   }
 
+  //console.log(`https://www.poewiki.net/w/api.php?action=query&titles=Image:${itemImage}&prop=imageinfo&iiprop=url&format=json`)
+
   axios
     .get(
-      `https://www.poewiki.net/w/api.php?action=query&titles=Image:${skillImageName}&prop=imageinfo&iiprop=url&format=json`
+      `https://www.poewiki.net/w/api.php?action=query&titles=Image:${itemImage}&prop=imageinfo&iiprop=url&format=json`
     )
     .then((response) => {
       cache.set(cacheKey, response.data); // set cache
@@ -119,5 +114,51 @@ exports.skillGemImg = (req, res, next) => {
       return res
         .status(500)
         .json({ message: "Something went wrong while getting skill image!" });
+    });
+};
+
+exports.itemImgName = (req, res, next) => {
+  const itemName = req.body.itemName;
+  console.log(itemName);
+
+  if (itemName.includes("Unique ID:")) {
+    return res.status(200).json('none');
+  }
+
+  const encodedName = encodeURIComponent(`"${itemName}"`)
+    .replace(/'/g, "%27")
+    .replace(/!/g, "%21")
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29")
+    .replace(/\*/g, "%2A");
+
+  const cacheKey = `itemImgName${itemName}`;
+
+  const cachedData = cache.get(cacheKey);
+  if (cachedData) {
+    return res.status(200).json(cachedData);
+  }
+
+  // console.log(`https://www.poewiki.net/w/api.php?action=cargoquery&tables=items&fields=inventory_icon&where=name=${encodedName}&format=json`)
+
+  axios
+    .get(
+      `https://www.poewiki.net/w/api.php?action=cargoquery&tables=items&fields=inventory_icon&where=name=${encodedName}&format=json`
+    )
+    .then((response) => {
+      const result = response.data.cargoquery[0].title[
+        "inventory icon"
+      ].replace(/^File:/, "");
+      // console.log(result)
+      cache.set(cacheKey, result); // set cache
+      return res.status(200).json(result);
+    })
+    .catch((error) => {
+      console.error(error);
+      return res
+        .status(500)
+        .json({
+          message: "Something went wrong while getting item image name!",
+        });
     });
 };
