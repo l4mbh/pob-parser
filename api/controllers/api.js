@@ -119,10 +119,9 @@ exports.itemImg = (req, res, next) => {
 
 exports.itemImgName = (req, res, next) => {
   const itemName = req.body.itemName;
-  console.log(itemName);
 
   if (itemName.includes("Unique ID:")) {
-    return res.status(200).json('none');
+    return res.status(200).json("none");
   }
 
   const encodedName = encodeURIComponent(`"${itemName}"`)
@@ -155,10 +154,8 @@ exports.itemImgName = (req, res, next) => {
     })
     .catch((error) => {
       console.error(error);
-      return res
-        .status(500)
-        .json({
-          message: "Something went wrong while getting item image name!",
-        });
+      return res.status(500).json({
+        message: "Something went wrong while getting item image name!",
+      });
     });
 };
